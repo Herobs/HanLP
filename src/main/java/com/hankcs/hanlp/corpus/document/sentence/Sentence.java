@@ -221,12 +221,20 @@ public class Sentence implements Serializable, Iterable<IWord>
         {
             return null;
         }
-        Pattern pattern = Pattern.compile("(\\[(([^\\s\\]]+/[0-9a-zA-Z]+)\\s+)+?([^\\s\\]]+/[0-9a-zA-Z]+)]/?[0-9a-zA-Z]+)|([^\\s]+/[0-9a-zA-Z]+)");
+//        Pattern pattern = Pattern.compile("(\\[(([^\\s\\]]+/[0-9a-zA-Z]+)\\s+)+?([^\\s\\]]+/[0-9a-zA-Z]+)]/?[0-9a-zA-Z]+)|([^\\s]+/[0-9a-zA-Z]+)");
+        Pattern pattern = Pattern.compile("(?<=\\s|^)(\\[[^\\[\\]]+]/\\w+)|(\\S[^\\[]*?(/\\w+)+)");
+        Pattern confirm = Pattern.compile("^\\[[^\\s]+/\\w+( [^\\s]+?/\\w+)*]/\\w+$");
         Matcher matcher = pattern.matcher(param);
         List<IWord> wordList = new LinkedList<IWord>();
         while (matcher.find())
         {
             String single = matcher.group();
+            if (single.startsWith("[") && !single.startsWith("[/") &&
+                !confirm.matcher(single).matches()) {
+                logger.warning("在用 " + single + " 构造单词时失败，句子构造参数为 " + param);
+                return null;
+            }
+
             IWord word = WordFactory.create(single);
             if (word == null)
             {

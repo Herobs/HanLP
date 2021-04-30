@@ -31,6 +31,7 @@ public class NERTagSet extends TagSet
     public final String E_TAG_PREFIX = "E-";
     public final String S_TAG = "S";
     public final char S_TAG_CHAR = 'S';
+    public final String S_TAG_PREFIX = "S-";
     public final Set<String> nerLabels = new HashSet<String>();
 
     /**

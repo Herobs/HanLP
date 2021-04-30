@@ -237,29 +237,32 @@ public class AbstractLexicalAnalyzer extends CharacterBasedSegment implements Le
 
                 List<Word> result = new LinkedList<Word>();
                 result.add(new Word(wordArray[0], posArray[0]));
-                String prePos = posArray[0];
+                String preNer = nerArray[0];
 
                 NERTagSet tagSet = getNERTagSet();
                 for (int i = 1; i < nerArray.length; i++)
                 {
                     if (nerArray[i].charAt(0) == tagSet.B_TAG_CHAR || nerArray[i].charAt(0) == tagSet.S_TAG_CHAR || nerArray[i].charAt(0) == tagSet.O_TAG_CHAR)
                     {
-                        termList.add(result.size() > 1 ? new CompoundWord(result, prePos) : result.get(0));
+                        if (preNer.startsWith(tagSet.S_TAG_PREFIX) || result.size() > 1) {
+                            termList.add(new CompoundWord(result, NERTagSet.posOf(preNer)));
+                        } else {
+                            termList.add(result.get(0));
+                        }
+
                         result = new ArrayList<Word>();
                     }
                     result.add(new Word(wordArray[i], posArray[i]));
-                    if (nerArray[i].charAt(0) == tagSet.O_TAG_CHAR || nerArray[i].charAt(0) == tagSet.S_TAG_CHAR)
-                    {
-                        prePos = posArray[i];
-                    }
-                    else
-                    {
-                        prePos = NERTagSet.posOf(nerArray[i]);
-                    }
+
+                    preNer = nerArray[i];
                 }
                 if (result.size() != 0)
                 {
-                    termList.add(result.size() > 1 ? new CompoundWord(result, prePos) : result.get(0));
+                    if (preNer.startsWith(tagSet.S_TAG_PREFIX) || result.size() > 1) {
+                        termList.add(new CompoundWord(result, NERTagSet.posOf(preNer)));
+                    } else {
+                        termList.add(result.get(0));
+                    }
                 }
             }
             else
@@ -445,7 +448,7 @@ public class AbstractLexicalAnalyzer extends CharacterBasedSegment implements Le
                         {
                             childrenList.add(iterator.next());
                         }
-                        if (nerArray[i].charAt(0) == tagSet.O_TAG_CHAR || nerArray[i].charAt(0) == tagSet.S_TAG_CHAR)
+                        if (nerArray[i].charAt(0) == tagSet.O_TAG_CHAR)
                         {
                             prePos = posArray[i];
                         }

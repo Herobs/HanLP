@@ -326,13 +326,20 @@ public class Utility
 
                 if (nerLabels.contains(word.getLabel()))
                 {
-                    collector.add(new String[]{words[0].value, words[0].label, tagSet.B_TAG_PREFIX + word.getLabel()});
-                    for (int i = 1; i < words.length - 1; i++)
-                    {
-                        collector.add(new String[]{words[i].value, words[i].label, tagSet.M_TAG_PREFIX + word.getLabel()});
+                    if (words.length == 1) {
+                        collector.add(new String[]{words[0].value, words[0].label, tagSet.S_TAG_PREFIX + word.getLabel()});
+                    } else {
+                        collector.add(new String[]{words[0].value, words[0].label, tagSet.B_TAG_PREFIX + word.getLabel()});
+                        for (int i = 1; i < words.length - 1; i++)
+                        {
+                            collector.add(new String[]{words[i].value, words[i].label, tagSet.M_TAG_PREFIX + word.getLabel()});
+                        }
+                        collector.add(new String[]{
+                            words[words.length - 1].value,
+                            words[words.length - 1].label,
+                            tagSet.E_TAG_PREFIX + word.getLabel(),
+                        });
                     }
-                    collector.add(new String[]{words[words.length - 1].value, words[words.length - 1].label,
-                        tagSet.E_TAG_PREFIX + word.getLabel()});
                 }
                 else
                 {
